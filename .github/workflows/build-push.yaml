@@ -49,3 +49,4 @@ jobs:
           --project="$PROJECT_ID"
           --tag="$AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$AR_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA"
           --quiet
+          --suppress-logs
