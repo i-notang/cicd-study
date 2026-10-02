@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: cicd-web
-          image: asia-northeast3-docker.pkg.dev/project-1d9090e3-554c-41b0-b7e/cicd-study/cicd-web:v1
+          image: image: asia-northeast3-docker.pkg.dev/project-1d9090e3-554c-41b0-b7e/cicd-study/cicd-web:v2
           ports:
             - name: http
               containerPort: 80
