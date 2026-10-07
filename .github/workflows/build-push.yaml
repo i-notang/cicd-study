@@ -1,0 +1,52 @@
+name: Build and Push cicd-web
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cicd-web/**"
+      - ".github/workflows/build-push.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cicd-web-build-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PROJECT_ID: project-1d9090e3-554c-41b0-b7e
+  AR_LOCATION: asia-northeast3
+  AR_REPOSITORY: cicd-study
+  IMAGE_NAME: cicd-web
+
+jobs:
+  build-and-push:
+    name: Build and push image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_BUILD_SUBMITTER_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Build and push image with Cloud Build
+        run: >-
+          gcloud builds submit ./cicd-web
+          --project="$PROJECT_ID"
+          --tag="$AR_LOCATION-docker.pkg.dev/$PROJECT_ID/$AR_REPOSITORY/$IMAGE_NAME:$GITHUB_SHA"
+          --quiet
+          --suppress-logs
